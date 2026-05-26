@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Nautilus Corpus</title>
+
+<link rel="stylesheet" href="/static/style.css">
+
+</head>
+
+<body>
+
+<nav class="navbar">
+    <div class="logo">Nautilus Corpus</div>
+
+    <div class="nav-links">
+        <a href="/">Главная</a>
+        <a href="/corpus" class="active">Корпус</a>
+        <a href="/clouds">Облака слов</a>
+        <a href="/article">Статья</a>
+
+    </div>
+</nav>
+
+<div class="page">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <h2>Поиск</h2>
+
+        <div class="search-box">
+
+            <input type="text" id="searchInput" placeholder="Введите слово...">
+
+            <div class="radio-group">
+                <label>
+                    <input type="radio" name="searchMode" value="lemma" checked>
+                    Лемма
+                </label>
+
+                <label>
+                    <input type="radio" name="searchMode" value="word">
+                    Словоформа
+                </label>
+            </div>
+
+            <button onclick="searchCorpus()">Найти</button>
+
+        </div>
+
+        <h2>Фильтры</h2>
+
+        <div class="filters">
+
+            <div class="filter-group">
+                <h3>Часть речи</h3>
+                <div id="pos"></div>
+            </div>
+
+            <div class="filter-group">
+                <h3>Падеж</h3>
+                <div id="case"></div>
+            </div>
+
+            <div class="filter-group">
+                <h3>Число</h3>
+                <div id="number"></div>
+            </div>
+
+            <div class="filter-group">
+                <h3>Род</h3>
+                <div id="gender"></div>
+            </div>
+
+            <div class="filter-group">
+                <h3>Время</h3>
+                <div id="tense"></div>
+            </div>
+
+            <div class="filter-group">
+                <h3>Вид</h3>
+                <div id="aspect"></div>
+            </div>
+
+            <div class="filter-group">
+                <h3>Лицо</h3>
+                <div id="person"></div>
+            </div>
+
+            <div class="filter-group">
+                <h3>Наклонение</h3>
+                <div id="mood"></div>
+            </div>
+
+            <div class="filter-group">
+                <h3>Залог</h3>
+                <div id="voice"></div>
+            </div>
+
+            <div class="filter-group">
+                <h3>Одушевленность</h3>
+                <div id="animacy"></div>
+            </div>
+
+            <div class="filter-group">
+                <h3>Альбом</h3>
+                <div id="album"></div>
+            </div>
+
+            <div class="filter-group">
+                <h3>Автор</h3>
+                <div id="author"></div>
+            </div>
+
+        </div>
+
+    </aside>
+
+    <!-- RESULTS -->
+
+    <main class="results-section">
+
+        <div class="results-header">
+
+            <h1>Корпус текстов</h1>
+
+            <div id="resultsCount"></div>
+
+        </div>
+
+        <div id="results"></div>
+
+    </main>
+
+</div>
+
+<script src="/static/corpus.js"></script>
+
+</body>
+</html>
