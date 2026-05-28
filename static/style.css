@@ -105,7 +105,7 @@ body {
 .search-box input {
     width: 100%;
     padding: 12px;
-    border-radius: 10px;
+    border-radius: 12px;
     border: none;
 
     margin-bottom: 15px;
@@ -114,13 +114,30 @@ body {
     color: white;
 }
 
+#searchInput {
+    width: 92.5%;
+}
+
 .radio-group {
+    display: flex;
+    flex-direction: column;
     margin-bottom: 15px;
 }
 
 .radio-group label {
-    display: block;
+    display: flex;
+    position: relative;
+    color: #ffd000;
+    background: #222;
     margin-bottom: 8px;
+    padding: 6px;
+    border-radius: 12px;
+}
+
+.radio-group label input {
+    position: absolute;
+    left: 140px;
+    background: #ffd000;
 }
 
 button {
@@ -128,7 +145,7 @@ button {
     padding: 12px;
 
     border: none;
-    border-radius: 10px;
+    border-radius: 12px;
 
     background: #ffd000;
 
@@ -148,16 +165,17 @@ button:hover {
 .filters {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 15px;
 }
 
 .filter-group {
     background: #222;
-    padding: 15px;
+    padding: 5px;
     border-radius: 12px;
 }
 
 .filter-group h3 {
+
     margin-top: 0;
     color: #ffd000;
     font-size: 16px;
@@ -165,7 +183,7 @@ button:hover {
 
 .filter-group label {
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     cursor: pointer;
 }
 
