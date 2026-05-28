@@ -422,3 +422,115 @@ button:hover {
 .search-box button {
     width: 100%;
 }
+/* =========================
+   COLLAPSIBLE FILTERS
+========================= */
+
+.filter-title {
+
+    cursor: pointer;
+
+    user-select: none;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+}
+
+.filter-title::after {
+
+    content: "+";
+
+    color: #ffd000;
+
+    font-size: 20px;
+}
+
+.filter-group.active .filter-title::after {
+
+    content: "−";
+}
+
+.filter-content {
+
+    display: none;
+
+    margin-top: 15px;
+}
+
+.filter-group.active .filter-content {
+
+    display: block;
+}
+/* =========================
+   PAGINATION
+========================= */
+
+.pagination {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 10px;
+
+    justify-content: center;
+
+    margin-top: 40px;
+}
+
+.page-button {
+
+    width: auto;
+
+    min-width: 45px;
+
+    padding: 10px 14px;
+
+    border-radius: 10px;
+
+    border: none;
+
+    background: #222;
+
+    color: white;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.page-button:hover {
+
+    background: #444;
+}
+
+.page-button.active {
+
+    background: #ffd000;
+
+    color: black;
+
+    font-weight: bold;
+}
+.pagination-dots {
+
+    display: flex;
+
+    align-items: center;
+
+    color: #888;
+
+    padding: 0 5px;
+
+    font-size: 18px;
+}
+
+.page-button:disabled {
+
+    opacity: 0.4;
+
+    cursor: default;
+}

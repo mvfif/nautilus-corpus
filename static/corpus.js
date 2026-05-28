@@ -1,10 +1,17 @@
 let corpusData = [];
 
+let currentResults = [];
+
+let currentPage = 1;
+
+const RESULTS_PER_PAGE = 50;
+
 /* =========================
    NORMALIZATION
 ========================= */
 
 function normalize(text) {
+
     return (text || "")
         .toLowerCase()
         .replace(/ё/g, "е")
@@ -16,6 +23,7 @@ function normalize(text) {
 ========================= */
 
 const FILTERS = [
+
     "pos",
     "case",
     "number",
@@ -26,8 +34,10 @@ const FILTERS = [
     "mood",
     "voice",
     "animacy",
+    "song",
     "album",
-    "author"
+    "author",
+    "year"
 ];
 
 /* =========================
@@ -123,7 +133,6 @@ fetch('/data')
         corpusData = data;
 
         buildFilters();
-
     });
 
 /* =========================
@@ -134,31 +143,49 @@ function buildFilters() {
 
     FILTERS.forEach(field => {
 
-        const container = document.getElementById(field);
+        const container =
+            document.getElementById(field);
 
         if (!container) return;
 
-        let values = [...new Set(
-            corpusData
-                .map(item => item[field])
-                .filter(value =>
-                    value &&
-                    value !== ""
-                )
-        )];
+        let values = [
 
-        values.sort();
+            ...new Set(
+
+                corpusData
+                    .map(item => item[field])
+                    .filter(value =>
+                        value &&
+                        value !== ""
+                    )
+            )
+        ];
+
+        if (field === "year") {
+
+            values.sort(
+                (a, b) =>
+                    Number(a) - Number(b)
+            );
+
+        } else {
+
+            values.sort();
+        }
 
         values.forEach(value => {
 
-            const label = document.createElement("label");
+            const label =
+                document.createElement("label");
 
             label.innerHTML = `
+
                 <input
                     type="checkbox"
                     name="${field}"
                     value="${value}"
                 >
+
                 ${grammarMap[value] || value}
             `;
 
@@ -168,15 +195,17 @@ function buildFilters() {
 }
 
 /* =========================
-   GET SELECTED FILTERS
+   GET SELECTED
 ========================= */
 
 function getSelected(field) {
 
     return [
+
         ...document.querySelectorAll(
             `input[name="${field}"]:checked`
         )
+
     ].map(input => input.value);
 }
 
@@ -187,7 +216,10 @@ function getSelected(field) {
 function searchCorpus() {
 
     const query = normalize(
-        document.getElementById("searchInput").value
+
+        document.getElementById(
+            "searchInput"
+        ).value
     );
 
     const mode = document.querySelector(
@@ -196,11 +228,12 @@ function searchCorpus() {
 
     let results = corpusData.filter(item => {
 
-        /* SEARCH */
+        /* SEARCH MODE */
 
         if (query !== "") {
 
             const target = normalize(
+
                 mode === "lemma"
                     ? item.lemma
                     : item.word
@@ -215,11 +248,16 @@ function searchCorpus() {
 
         for (let field of FILTERS) {
 
-            const selected = getSelected(field);
+            const selected =
+                getSelected(field);
 
             if (selected.length > 0) {
 
-                if (!selected.includes(item[field])) {
+                if (
+                    !selected.includes(
+                        item[field]
+                    )
+                ) {
                     return false;
                 }
             }
@@ -228,11 +266,11 @@ function searchCorpus() {
         return true;
     });
 
-    /* LIMIT RESULTS */
+    currentResults = results;
 
-    results = results.slice(0, 200);
+    currentPage = 1;
 
-    renderResults(results);
+    renderResults();
 }
 
 /* =========================
@@ -245,26 +283,38 @@ function buildKWIC(text, word) {
 
     text = text.replace(/<br>/g, " ");
 
-    const normalizedText = normalize(text);
-    const normalizedWord = normalize(word);
+    const normalizedText =
+        normalize(text);
 
-    const index = normalizedText.indexOf(normalizedWord);
+    const normalizedWord =
+        normalize(word);
+
+    const index =
+        normalizedText.indexOf(
+            normalizedWord
+        );
 
     if (index === -1) return text;
 
-    const start = Math.max(0, index - 30);
+    const start =
+        Math.max(0, index - 30);
 
-    const end = Math.min(
-        text.length,
-        index + word.length + 30
-    );
+    const end =
+        Math.min(
+            text.length,
+            index + word.length + 30
+        );
 
-    let snippet = text.slice(start, end);
+    let snippet =
+        text.slice(start, end);
 
-    const regex = new RegExp(`(${word})`, "gi");
+    const regex =
+        new RegExp(`(${word})`, "gi");
 
     snippet = snippet.replace(
+
         regex,
+
         '<span class="highlight">$1</span>'
     );
 
@@ -279,10 +329,13 @@ function formatFullContext(text, word) {
 
     if (!text) return "";
 
-    const regex = new RegExp(`(${word})`, "gi");
+    const regex =
+        new RegExp(`(${word})`, "gi");
 
     return text.replace(
+
         regex,
+
         '<span class="highlight">$1</span>'
     );
 }
@@ -291,20 +344,25 @@ function formatFullContext(text, word) {
    RENDER RESULTS
 ========================= */
 
-function renderResults(results) {
+function renderResults() {
 
-    const container = document.getElementById("results");
+    const container =
+        document.getElementById("results");
 
-    const count = document.getElementById("resultsCount");
-
-    count.innerText =
-        `Найдено: ${results.length}`;
+    const count =
+        document.getElementById(
+            "resultsCount"
+        );
 
     container.innerHTML = "";
 
-    if (results.length === 0) {
+    count.innerText =
+        `Найдено: ${currentResults.length}`;
+
+    if (currentResults.length === 0) {
 
         container.innerHTML = `
+
             <div class="result-card">
                 Ничего не найдено
             </div>
@@ -313,11 +371,23 @@ function renderResults(results) {
         return;
     }
 
-    results.forEach(item => {
+    const start =
+        (currentPage - 1)
+        * RESULTS_PER_PAGE;
 
-        const card = document.createElement("div");
+    const end =
+        start + RESULTS_PER_PAGE;
 
-        card.className = "result-card";
+    const visible =
+        currentResults.slice(start, end);
+
+    visible.forEach(item => {
+
+        const card =
+            document.createElement("div");
+
+        card.className =
+            "result-card";
 
         /* TAGS */
 
@@ -337,6 +407,7 @@ function renderResults(results) {
         ]
         .filter(Boolean)
         .map(tag => `
+
             <span class="tag">
                 ${grammarMap[tag] || tag}
             </span>
@@ -376,22 +447,31 @@ function renderResults(results) {
                     ${item.author || "—"}
                 </div>
 
+                <div>
+                    <b>Год:</b>
+                    ${item.year || "—"}
+                </div>
+
             </div>
 
             <div class="kwic">
 
                 <div class="short-kwic">
+
                     ${buildKWIC(
                         item.context,
                         item.word
                     )}
+
                 </div>
 
                 <div class="full-context hidden">
+
                     ${formatFullContext(
                         item.context,
                         item.word
                     )}
+
                 </div>
 
                 <button class="context-button">
@@ -403,6 +483,169 @@ function renderResults(results) {
 
         container.appendChild(card);
     });
+    /* =========================
+       PAGINATION
+    ========================= */
+
+    const totalPages = Math.ceil(
+        currentResults.length / RESULTS_PER_PAGE
+    );
+
+    if (totalPages > 1) {
+
+        const pagination =
+            document.createElement("div");
+
+        pagination.className = "pagination";
+
+        /* PREVIOUS */
+
+        const prevButton =
+            document.createElement("button");
+
+        prevButton.innerText =
+            "← Предыдущая";
+
+        prevButton.className =
+            "page-button";
+
+        prevButton.disabled =
+            currentPage === 1;
+
+        prevButton.onclick = function () {
+
+            if (currentPage > 1) {
+
+                currentPage--;
+
+                renderResults();
+
+                window.scrollTo({
+                    top: 0,
+                    behavior: "smooth"
+                });
+            }
+        };
+
+        pagination.appendChild(prevButton);
+
+        /* PAGE ARRAY */
+
+        let pages = [];
+
+        if (totalPages <= 7) {
+
+            for (let i = 1; i <= totalPages; i++) {
+                pages.push(i);
+            }
+
+        } else {
+
+            pages.push(1);
+
+            if (currentPage > 4) {
+                pages.push("...");
+            }
+
+            let start =
+                Math.max(2, currentPage - 1);
+
+            let end =
+                Math.min(
+                    totalPages - 1,
+                    currentPage + 1
+                );
+
+            for (let i = start; i <= end; i++) {
+                pages.push(i);
+            }
+
+            if (currentPage < totalPages - 3) {
+                pages.push("...");
+            }
+
+            pages.push(totalPages);
+        }
+
+        /* RENDER PAGES */
+
+        pages.forEach(page => {
+
+            if (page === "...") {
+
+                const dots =
+                    document.createElement("span");
+
+                dots.className =
+                    "pagination-dots";
+
+                dots.innerText = "...";
+
+                pagination.appendChild(dots);
+
+            } else {
+
+                const button =
+                    document.createElement("button");
+
+                button.innerText = page;
+
+                button.className =
+                    "page-button";
+
+                if (page === currentPage) {
+                    button.classList.add("active");
+                }
+
+                button.onclick = function () {
+
+                    currentPage = page;
+
+                    renderResults();
+
+                    window.scrollTo({
+                        top: 0,
+                        behavior: "smooth"
+                    });
+                };
+
+                pagination.appendChild(button);
+            }
+        });
+
+        /* NEXT */
+
+        const nextButton =
+            document.createElement("button");
+
+        nextButton.innerText =
+            "Следующая →";
+
+        nextButton.className =
+            "page-button";
+
+        nextButton.disabled =
+            currentPage === totalPages;
+
+        nextButton.onclick = function () {
+
+            if (currentPage < totalPages) {
+
+                currentPage++;
+
+                renderResults();
+
+                window.scrollTo({
+                    top: 0,
+                    behavior: "smooth"
+                });
+            }
+        };
+
+        pagination.appendChild(nextButton);
+
+        container.appendChild(pagination);
+    }
 }
 
 /* =========================
@@ -411,47 +654,86 @@ function renderResults(results) {
 
 document
     .getElementById("searchInput")
-    .addEventListener("keydown", function(event) {
+    .addEventListener(
+        "keydown",
+        function(event) {
 
-        if (event.key === "Enter") {
-            searchCorpus();
+            if (event.key === "Enter") {
+
+                searchCorpus();
+            }
         }
-    });
+    );
 
 /* =========================
    CONTEXT BUTTON
 ========================= */
 
-document.addEventListener("click", function(event) {
-
-    if (
-        event.target.classList.contains(
-            "context-button"
-        )
-    ) {
-
-        const button = event.target;
-
-        const fullContext =
-            button.parentElement.querySelector(
-                ".full-context"
-            );
+document.addEventListener(
+    "click",
+    function(event) {
 
         if (
-            fullContext.classList.contains("hidden")
+            event.target.classList.contains(
+                "context-button"
+            )
         ) {
 
-            fullContext.classList.remove("hidden");
+            const button =
+                event.target;
 
-            button.innerText =
-                "Скрыть полный контекст";
+            const fullContext =
 
-        } else {
+                button.parentElement.querySelector(
+                    ".full-context"
+                );
 
-            fullContext.classList.add("hidden");
+            if (
+                fullContext.classList.contains(
+                    "hidden"
+                )
+            ) {
 
-            button.innerText =
-                "Показать полный контекст";
+                fullContext.classList.remove(
+                    "hidden"
+                );
+
+                button.innerText =
+                    "Скрыть полный контекст";
+
+            } else {
+
+                fullContext.classList.add(
+                    "hidden"
+                );
+
+                button.innerText =
+                    "Показать полный контекст";
+            }
         }
     }
-});
+);
+
+/* =========================
+   COLLAPSIBLE FILTERS
+========================= */
+
+document.addEventListener(
+    "click",
+    function(event) {
+
+        if (
+            event.target.classList.contains(
+                "filter-title"
+            )
+        ) {
+
+            const group =
+                event.target.parentElement;
+
+            group.classList.toggle(
+                "active"
+            );
+        }
+    }
+);
