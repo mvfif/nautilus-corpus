@@ -17,7 +17,12 @@ function normalize(text) {
         .replace(/ё/g, "е")
         .trim();
 }
-
+function escapeRegExp(text) {
+    return text.replace(
+        /[.*+?^${}()|[\]\\]/g,
+        "\\$&"
+    );
+}
 /* =========================
    FILTERS
 ========================= */
@@ -34,10 +39,9 @@ const FILTERS = [
     "mood",
     "voice",
     "animacy",
-    "song",
-    "album",
     "author",
-    "year"
+    "album",
+    "song",
 ];
 
 /* =========================
@@ -212,6 +216,28 @@ function getSelected(field) {
 /* =========================
    SEARCH
 ========================= */
+function updateSearchPlaceholder() {
+
+    const mode = document.querySelector(
+        'input[name="searchMode"]:checked'
+    ).value;
+
+    const input =
+        document.getElementById("searchInput");
+
+    if (mode === "lemma") {
+
+        input.placeholder =
+            "Введите лемму";
+
+    } else {
+
+        input.placeholder =
+            "Введите словоформу";
+    }
+}
+
+updateSearchPlaceholder();
 
 function searchCorpus() {
 
@@ -225,6 +251,8 @@ function searchCorpus() {
     const mode = document.querySelector(
         'input[name="searchMode"]:checked'
     ).value;
+    const minYear = parseInt(document.getElementById("yearMin").value);
+    const maxYear = parseInt(document.getElementById("yearMax").value);
 
     let results = corpusData.filter(item => {
 
@@ -233,16 +261,16 @@ function searchCorpus() {
         if (query !== "") {
 
             const target = normalize(
-
                 mode === "lemma"
                     ? item.lemma
                     : item.word
             );
 
-            if (!target.includes(query)) {
+            if (target !== query) {
                 return false;
             }
         }
+
 
         /* FILTERS */
 
@@ -260,6 +288,14 @@ function searchCorpus() {
                 ) {
                     return false;
                 }
+            }
+            const year = parseInt(item.year);
+
+            if (
+                !isNaN(year) &&
+                (year < minYear || year > maxYear)
+            ) {
+                return false;
             }
         }
 
@@ -281,46 +317,29 @@ function buildKWIC(text, word) {
 
     if (!text || !word) return "";
 
-    text = text.replace(/<br>/g, " ");
+    const lines = text.split(/<br\s*\/?>|\n/);
 
-    const normalizedText =
-        normalize(text);
-
-    const normalizedWord =
-        normalize(word);
-
-    const index =
-        normalizedText.indexOf(
-            normalizedWord
-        );
-
-    if (index === -1) return text;
-
-    const start =
-        Math.max(0, index - 30);
-
-    const end =
-        Math.min(
-            text.length,
-            index + word.length + 30
-        );
-
-    let snippet =
-        text.slice(start, end);
+    const escapedWord =
+        escapeRegExp(word);
 
     const regex =
-        new RegExp(`(${word})`, "gi");
+        new RegExp(
+            `(^|[^А-Яа-яЁё])(${escapedWord})(?=[^А-Яа-яЁё]|$)`,
+            "i"
+        );
 
-    snippet = snippet.replace(
+    const foundLine =
+        lines.find(line => regex.test(line));
 
+    if (!foundLine) {
+        return lines[0] || "";
+    }
+
+    return `... ${foundLine.replace(
         regex,
-
-        '<span class="highlight">$1</span>'
-    );
-
-    return `... ${snippet} ...`;
+        '$1<span class="highlight">$2</span>'
+    )} ...`;
 }
-
 /* =========================
    FULL CONTEXT
 ========================= */
@@ -329,14 +348,18 @@ function formatFullContext(text, word) {
 
     if (!text) return "";
 
+    const escapedWord =
+        escapeRegExp(word);
+
     const regex =
-        new RegExp(`(${word})`, "gi");
+        new RegExp(
+            `(^|[^А-Яа-яЁё])(${escapedWord})(?=[^А-Яа-яЁё]|$)`,
+            "gi"
+        );
 
     return text.replace(
-
         regex,
-
-        '<span class="highlight">$1</span>'
+        '$1<span class="highlight">$2</span>'
     );
 }
 
@@ -737,3 +760,108 @@ document.addEventListener(
         }
     }
 );
+function resetFilters() {
+
+    // очищаем поиск
+
+    document.getElementById(
+        "searchInput"
+    ).value = "";
+
+    // возвращаем поиск по лемме
+
+    document.querySelector(
+        'input[value="lemma"]'
+    ).checked = true;
+
+    updateSearchPlaceholder();
+
+    // снимаем все чекбоксы
+
+    document
+        .querySelectorAll(
+            '.filter-content input[type="checkbox"]'
+        )
+        .forEach(cb => {
+
+            cb.checked = false;
+        });
+
+    // очищаем результаты
+
+    document.getElementById(
+        "results"
+    ).innerHTML = "";
+
+    document.getElementById(
+        "resultsCount"
+    ).textContent = "";
+}
+document
+.querySelectorAll(
+    'input[name="searchMode"]'
+)
+.forEach(radio => {
+
+    radio.addEventListener(
+        "change",
+        updateSearchPlaceholder
+    );
+});
+const yearMin =
+    document.getElementById("yearMin");
+
+const yearMax =
+    document.getElementById("yearMax");
+
+const yearMinLabel =
+    document.getElementById("yearMinLabel");
+
+const yearMaxLabel =
+    document.getElementById("yearMaxLabel");
+
+const sliderRange =
+    document.getElementById("sliderRange");
+
+function updateYearSlider() {
+
+    let min =
+        parseInt(yearMin.value);
+
+    let max =
+        parseInt(yearMax.value);
+
+    if (min > max) {
+        [min, max] = [max, min];
+
+        yearMin.value = min;
+        yearMax.value = max;
+    }
+
+    yearMinLabel.textContent = min;
+    yearMaxLabel.textContent = max;
+
+    const percentMin =
+        ((min - 1983) / (1997 - 1983)) * 100;
+
+    const percentMax =
+        ((max - 1983) / (1997 - 1983)) * 100;
+
+    sliderRange.style.left =
+        percentMin + "%";
+
+    sliderRange.style.width =
+        (percentMax - percentMin) + "%";
+}
+
+yearMin.addEventListener(
+    "input",
+    updateYearSlider
+);
+
+yearMax.addEventListener(
+    "input",
+    updateYearSlider
+);
+
+updateYearSlider();

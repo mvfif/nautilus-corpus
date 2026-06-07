@@ -13,7 +13,9 @@
 <body>
 
 <nav class="navbar">
-    <div class="logo">Nautilus Corpus</div>
+    <a href="/" class="logo">
+    NAUTILUS CORPUS
+    </a>
 
     <div class="nav-links">
         <a href="/">Главная</a>
@@ -24,146 +26,197 @@
     </div>
 </nav>
 
-<div class="page">
+<div class="corpus-container">
 
-    <!-- SIDEBAR -->
+    <div class="search-panel">
 
-    <aside class="sidebar">
+        <h1>Корпус текстов</h1>
 
-        <h2>Поиск</h2>
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="Введите слово..."
+        >
 
-        <div class="search-box">
+        <div class="radio-group">
 
-            <input type="text" id="searchInput" placeholder="Введите слово...">
+            <label>
+                <input
+                    type="radio"
+                    name="searchMode"
+                    value="lemma"
+                    checked
+                >
+                Лемма
+            </label>
 
-            <div class="radio-group">
-                <label>
-                    <strong>Лемма</strong>
-                    <input type="radio" name="searchMode" value="lemma" checked>
-                </label>
-
-                <label>
-                    <input type="radio" name="searchMode" value="word">
-                    <strong>Словоформа</strong>
-                </label>
-            </div>
-
-            <button onclick="searchCorpus()">Найти</button>
+            <label>
+                <input
+                    type="radio"
+                    name="searchMode"
+                    value="word"
+                >
+                Словоформа
+            </label>
 
         </div>
 
-        <h2>Фильтры</h2>
+        <!-- ГРАММАТИКА -->
 
-        <div class="filters">
+        <div class="filter-group">
 
-            <div class="filter-group">
-                <h3 class="filter-title">Часть речи</h3>
-                <div class="filter-content">
+            <h3 class="filter-title">
+                Грамматические признаки
+            </h3>
+
+            <div class="filter-content">
+
+                <div class="filter-section">
+                    <h4>Часть речи</h4>
                     <div id="pos"></div>
                 </div>
-            </div>
 
-            <div class="filter-group">
-                <h3 class="filter-title">Падеж</h3>
-                <div class="filter-content">
+                <div class="filter-section">
+                    <h4>Падеж</h4>
                     <div id="case"></div>
                 </div>
-            </div>
 
-            <div class="filter-group">
-                <h3 class="filter-title">Число</h3>
-                <div class="filter-content">
+                <div class="filter-section">
+                    <h4>Число</h4>
                     <div id="number"></div>
                 </div>
-            </div>
 
-            <div class="filter-group">
-                <h3 class="filter-title">Род</h3>
-                <div class="filter-content">
+                <div class="filter-section">
+                    <h4>Род</h4>
                     <div id="gender"></div>
                 </div>
-            </div>
 
-            <div class="filter-group">
-                <h3 class="filter-title">Время</h3>
-                <div class="filter-content">
+                <div class="filter-section">
+                    <h4>Время</h4>
                     <div id="tense"></div>
                 </div>
-            </div>
 
-            <div class="filter-group">
-                <h3 class="filter-title">Вид</h3>
-                <div class="filter-content">
+                <div class="filter-section">
+                    <h4>Вид</h4>
                     <div id="aspect"></div>
                 </div>
-            </div>
 
-            <div class="filter-group">
-                <h3 class="filter-title">Лицо</h3>
-                <div class="filter-content">
+                <div class="filter-section">
+                    <h4>Лицо</h4>
                     <div id="person"></div>
                 </div>
-            </div>
 
-            <div class="filter-group">
-                <h3 class="filter-title">Наклонение</h3>
-                <div class="filter-content">
+                <div class="filter-section">
+                    <h4>Наклонение</h4>
                     <div id="mood"></div>
                 </div>
-            </div>
 
-            <div class="filter-group">
-                <h3 class="filter-title">Залог</h3>
-                <div class="filter-content">
+                <div class="filter-section">
+                    <h4>Залог</h4>
                     <div id="voice"></div>
                 </div>
-            </div>
 
-            <div class="filter-group">
-                <h3 class="filter-title">Одушевленность</h3>
-                <div class="filter-content">
+                <div class="filter-section">
+                    <h4>Одушевлённость</h4>
                     <div id="animacy"></div>
                 </div>
+
             </div>
 
-            <div class="filter-group">
-                <h3 class="filter-title">Песня</h3>
-                <div class="filter-content">
+        </div>
+        <p> </p>
+
+        <!-- МЕТАДАННЫЕ -->
+
+        <div class="filter-group">
+
+            <h3 class="filter-title">
+                Метаданные
+            </h3>
+
+            <div class="filter-content">
+
+                <div class="filter-section">
+                    <h4>Песня</h4>
                     <div id="song"></div>
                 </div>
-            </div>
 
-            <div class="filter-group">
-                <h3 class="filter-title">Альбом</h3>
-                <div class="filter-content">
+                <div class="filter-section">
+                    <h4>Альбом</h4>
                     <div id="album"></div>
                 </div>
-            </div>
 
-            <div class="filter-group">
-                <h3 class="filter-title">Автор</h3>
-                <div class="filter-content">
+                <div class="filter-section">
+                    <h4>Автор</h4>
                     <div id="author"></div>
                 </div>
+
+                <div class="filter-section">
+
+                    <h4>Год</h4>
+
+                    <div class="year-range">
+
+                        <div class="year-display">
+                            <span id="yearMinLabel">1983</span>
+                            —
+                            <span id="yearMaxLabel">1997</span>
+                        </div>
+
+                        <div class="slider-container">
+
+                            <div class="slider-track"></div>
+
+                            <div id="sliderRange" class="slider-range"></div>
+
+                            <input
+                                type="range"
+                                id="yearMin"
+                                min="1983"
+                                max="1997"
+                                value="1983"
+                            >
+
+                            <input
+                                type="range"
+                                id="yearMax"
+                                min="1983"
+                                max="1997"
+                                value="1997"
+                            >
+
+                        </div>
+
+                    </div>
+
+                </div>
+
             </div>
 
-            <div class="filter-group">
-                <h3 class="filter-title">Год</h3>
-                <div class="filter-content">
-                    <div id="year"></div>
-                </div>
-            </div>
         </div>
 
-    </aside>
+        <div class="button-group">
 
-    <!-- RESULTS -->
+            <button
+                class="search-button"
+                onclick="searchCorpus()"
+            >
+                Найти
+            </button>
 
-    <main class="results-section">
+            <button
+                class="reset-button"
+                onclick="resetFilters()"
+            >
+                Сбросить
+            </button>
+
+        </div>
+    </div>
+
+    <div class="results-section">
 
         <div class="results-header">
-
-            <h1>Корпус текстов</h1>
 
             <div id="resultsCount"></div>
 
@@ -171,9 +224,10 @@
 
         <div id="results"></div>
 
-    </main>
+    </div>
 
 </div>
+
 
 <script src="/static/corpus.js"></script>
 
