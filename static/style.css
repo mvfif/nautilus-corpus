@@ -227,6 +227,7 @@ body {
 
     text-align: center;
 
+    font-family: "Cour";
     font-size: 16px;
     font-weight: 600;
 
@@ -274,7 +275,7 @@ body {
 
 .filter-group h3 {
 
-    margin-top: 0;
+    margin: 8px 3px;
     color: #131936;
     font-size: 16px;
 }
@@ -641,7 +642,7 @@ body {
     max-width: 950px;
     margin: 60px auto;
     padding: 60px 80px;
-    background: #9a9a9a;
+    background: #f5f5f5;
     border-radius: 20px;
 
     box-sizing: border-box;
@@ -724,66 +725,67 @@ body {
 
 /* CLOUDS */
 
-.cloud-block {
-
-    margin-bottom: 60px;
-    text-align: center;
+.albums {
+    max-width: 900px;
+    margin: 0 auto;
 }
 
-.cloud-image {
+.album {
+    width: 100%;
+    margin-bottom: 12px;
+
+    border: 1px solid #131936;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.album-title {
+    width: 100%;
+
+    padding: 15px;
+
+    border: none;
+
+    background: #789aca;
+
+    color: #131936;
+
+    font-size: 18px;
+    font-weight: 700;
+
+    text-align: left;
+
+    cursor: pointer;
+}
+
+.album-content {
+
+    display: none;
+
+    padding: 20px;
+
+    background: #789aca;
+}
+
+.album.active .album-content {
+
+    display: block;
+}
+
+.album-cover {
 
     width: 100%;
-    max-width: 900px;
-    border-radius: 20px;
-    border: 1px solid #333;
-    box-shadow: 0 0 25px rgba(0,0,0,0.4);
+
+    display: block;
+
+    margin-bottom: 15px;
+    border-radius: 12px;
+
 }
 
-.cloud-caption {
-    margin-top: 20px;
-    color: #131936;
-    font-size: 20px;
-}
-
-.analysis-block {
-
-    background: #9a9a9a;
-
-    padding: 35px;
-
-    border-radius: 20px;
-
-    border: 1px solid #333;
-
-    line-height: 1.9;
-}
-
-.analysis-block h2 {
-
-    margin-top: 0;
-
-    color: #131936;
-}
-/* =========================
-   CLOUD GRID
-========================= */
-
-.cloud-row {
-
-    display: flex;
-
-    gap: 40px;
-
-    margin-bottom: 20px;
-
-    align-items: flex-start;
-}
-
-.cloud-row .cloud-block {
-
+.album-analysis {
     flex: 1;
-
-    margin-bottom: 0;
+    line-height: 1.7;
 }
 
 /* MOBILE */

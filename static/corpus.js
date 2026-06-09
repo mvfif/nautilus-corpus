@@ -1,3 +1,5 @@
+console.log("JS loaded");
+
 let corpusData = [];
 
 let currentResults = [];
@@ -865,3 +867,4 @@ yearMax.addEventListener(
 );
 
 updateYearSlider();
+
