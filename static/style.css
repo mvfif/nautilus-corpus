@@ -397,6 +397,65 @@ body {
     cursor: pointer;
 }
 
+/* FREQUENCY TABLE  */
+
+.results-tabs {
+
+    display: flex;
+
+    gap: 10px;
+
+    margin-bottom: 20px;
+}
+
+.tab-button {
+
+    padding: 10px 20px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    background: #9BBDBD;
+
+    color: #112929;
+
+    font-weight: 600;
+}
+.tab-button:hover {
+    filter: brightness(1.1);
+    transform: translateY(-2px)
+
+}
+.tab-button.active {
+
+    background: #337878;
+    color: #EEFFFF;
+}
+
+.freq-table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+}
+
+.freq-table th,
+.freq-table td {
+
+    padding: 10px;
+
+    border: 1px solid #ccc;
+
+    text-align: left;
+}
+
+.freq-table th {
+
+    background: #9BBDBD;
+}
 
 /* SCROLLBAR */
 
@@ -608,7 +667,7 @@ body {
 
     transform: translateY(-50%);
 
-    background: #789aca;
+    background: #337878;
 
     border-radius: 999px;
 }

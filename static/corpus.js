@@ -308,7 +308,12 @@ function searchCorpus() {
 
     currentPage = 1;
 
+    document.getElementById(
+        "searchResultsArea"
+    ).style.display = "block";
+
     renderResults();
+    renderFrequencyTable();
 }
 
 /* =========================
@@ -798,6 +803,10 @@ function resetFilters() {
     document.getElementById(
         "resultsCount"
     ).textContent = "";
+
+    document.getElementById(
+    "searchResultsArea"
+    ).style.display = "none";
 }
 document
 .querySelectorAll(
@@ -868,3 +877,120 @@ yearMax.addEventListener(
 
 updateYearSlider();
 
+document
+    .querySelectorAll(".tab-button")
+    .forEach(button => {
+
+        button.addEventListener("click", () => {
+
+            document
+                .querySelectorAll(".tab-button")
+                .forEach(btn =>
+                    btn.classList.remove("active")
+                );
+
+            button.classList.add("active");
+
+            const tab =
+                button.dataset.tab;
+
+            document.getElementById(
+                "kwicTab"
+            ).style.display =
+                tab === "kwic"
+                    ? "block"
+                    : "none";
+
+            document.getElementById(
+                "freqTab"
+            ).style.display =
+                tab === "freq"
+                    ? "block"
+                    : "none";
+        });
+
+    });
+
+function renderFrequencyTable() {
+
+    const freq = {};
+
+    currentResults.forEach(item => {
+
+        const lemma = item.lemma;
+
+        if (!lemma) return;
+
+        freq[lemma] =
+            (freq[lemma] || 0) + 1;
+    });
+
+    const corpusSize =
+        corpusData.length;
+
+    const rows =
+        Object.entries(freq)
+
+        .map(([lemma, count]) => ({
+
+            lemma,
+
+            count,
+
+            ipm:
+                (
+                    count /
+                    corpusSize *
+                    1000000
+                ).toFixed(2)
+        }))
+
+        .sort(
+            (a, b) =>
+                b.count - a.count
+        );
+
+    const container =
+        document.getElementById(
+            "frequencyTable"
+        );
+
+    container.innerHTML = `
+
+        <table class="freq-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>Лемма</th>
+
+                    <th>Количество вхождений</th>
+
+                    <th>ipm</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                ${rows.map(row => `
+
+                    <tr>
+
+                        <td>${row.lemma}</td>
+
+                        <td>${row.count}</td>
+
+                        <td>${row.ipm}</td>
+
+                    </tr>
+
+                `).join("")}
+
+            </tbody>
+
+        </table>
+    `;
+}
