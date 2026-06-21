@@ -16,20 +16,10 @@ app.add_middleware(
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/")
-def home():
-    return FileResponse("static/index.html")
 
 @app.get("/corpus")
 def corpus():
     return FileResponse("static/corpus.html")
-
-@app.get("/clouds")
-def clouds():
-    return FileResponse("static/clouds.html")
-
-@app.get("/article")
-def article():
-    return FileResponse("static/article.html")
 
 @app.get("/data")
 def data():

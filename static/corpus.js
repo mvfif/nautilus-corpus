@@ -28,6 +28,84 @@ function escapeRegExp(text) {
 /* =========================
    FILTERS
 ========================= */
+const SORT_ORDERS = {
+
+    pos: [
+        "NOUN",
+        "ADJF",
+        "ADJS",
+        "NUMR",
+        "VERB",
+        "INFN",
+        "ADVB",
+        "PRED",
+        "PRTF",
+        "PRTS",
+        "GRND",
+        "NPRO",
+        "APRO",
+        "PREP",
+        "CONJ",
+        "PRCL",
+        "INTJ"
+    ],
+
+    case: [
+        "nomn",
+        "gent",
+        "datv",
+        "accs",
+        "ablt",
+        "loct"
+    ],
+
+    number: [
+        "sing",
+        "plur"
+    ],
+
+    gender: [
+        "masc",
+        "femn",
+        "neut"
+    ],
+
+    tense: [
+        "past",
+        "pres",
+        "futr"
+    ],
+
+    aspect: [
+        "impf",
+        "perf"
+    ],
+
+    person: [
+        "1per",
+        "2per",
+        "3per"
+    ],
+
+    mood: [
+        "indc",
+        "impr"
+    ],
+
+    voice: [
+        "actv",
+        "pssv"
+    ],
+
+    краткость: [
+        "full",
+        "short"
+    ],
+
+    степень: [
+        "comp",
+    ]
+};
 
 const FILTERS = [
 
@@ -40,7 +118,8 @@ const FILTERS = [
     "person",
     "mood",
     "voice",
-    "animacy",
+    "степень",
+    "краткость",
     "author",
     "album",
     "song",
@@ -55,22 +134,25 @@ const grammarMap = {
     /* POS */
 
     "NOUN": "существительное",
+    "ADJF": "прилагательное",
+    "ADJS": "прилагательное",
+    "NUMR": "числительное",
     "VERB": "глагол",
     "INFN": "инфинитив",
-    "ADJF": "прилагательное",
-    "ADJS": "краткое прилагательное",
-    "COMP": "компаратив",
     "PRTF": "причастие",
-    "PRTS": "краткое причастие",
+    "PRTS": "причастие",
     "GRND": "деепричастие",
-    "NUMR": "числительное",
     "ADVB": "наречие",
     "NPRO": "местоимение",
+    "APRO": "мест-прил",
     "PRED": "предикатив",
     "PREP": "предлог",
     "CONJ": "союз",
     "PRCL": "частица",
     "INTJ": "междометие",
+    "full": "полное",
+    "short": "краткое",
+    "comp": "сравнительная",
 
     /* CASE */
 
@@ -122,10 +204,7 @@ const grammarMap = {
     "actv": "действительный",
     "pssv": "страдательный",
 
-    /* ANIMACY */
 
-    "anim": "одушевленное",
-    "inan": "неодушевленное"
 };
 
 /* =========================
@@ -167,7 +246,29 @@ function buildFilters() {
             )
         ];
 
-        if (field === "year") {
+        if (SORT_ORDERS[field]) {
+
+            values.sort((a, b) => {
+
+                const ai =
+                    SORT_ORDERS[field].indexOf(a);
+
+                const bi =
+                    SORT_ORDERS[field].indexOf(b);
+
+                if (ai === -1 && bi === -1)
+                    return a.localeCompare(b);
+
+                if (ai === -1)
+                    return 1;
+
+                if (bi === -1)
+                    return -1;
+
+                return ai - bi;
+            });
+
+        } else if (field === "year") {
 
             values.sort(
                 (a, b) =>
@@ -176,7 +277,12 @@ function buildFilters() {
 
         } else {
 
-            values.sort();
+            values.sort((a, b) =>
+                a.localeCompare(
+                    b,
+                    "ru"
+                )
+            );
         }
 
         values.forEach(value => {
@@ -199,7 +305,6 @@ function buildFilters() {
         });
     });
 }
-
 /* =========================
    GET SELECTED
 ========================= */
@@ -271,6 +376,7 @@ function searchCorpus() {
             if (target !== query) {
                 return false;
             }
+
         }
 
 
@@ -432,7 +538,8 @@ function renderResults() {
             item.person,
             item.mood,
             item.voice,
-            item.animacy
+            item.краткость,
+            item.степень
 
         ]
         .filter(Boolean)
