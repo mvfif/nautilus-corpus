@@ -69,6 +69,10 @@ const SORT_ORDERS = {
         "femn",
         "neut"
     ],
+    animacy: [
+        "anim",
+        "inan"
+    ],
 
     tense: [
         "past",
@@ -118,6 +122,7 @@ const FILTERS = [
     "person",
     "mood",
     "voice",
+    "animacy",
     "степень",
     "краткость",
     "author",
@@ -176,6 +181,11 @@ const grammarMap = {
     "masc": "мужской",
     "femn": "женский",
     "neut": "средний",
+
+    /* ANIMACY */
+
+    "inan": "неодушевленное",
+    "anim": "одушевленное",
 
     /* TENSE */
 
@@ -533,6 +543,7 @@ function renderResults() {
             item.case,
             item.number,
             item.gender,
+            item.animacy,
             item.tense,
             item.aspect,
             item.person,
